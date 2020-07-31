@@ -1,35 +1,6 @@
 <template>
   <div>
-    <el-dialog
-      title="修改用户信息"
-      :visible.sync="dialogFormVisible">
-      <el-form v-model="selectedUser" style="text-align: left" ref="dataForm">
-        <el-form-item label="用户名" label-width="120px" prop="username">
-          <label>{{selectedUser.username}}</label>
-        </el-form-item>
-        <el-form-item label="真实姓名" label-width="120px" prop="name">
-          <el-input v-model="selectedUser.name" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号" label-width="120px" prop="phone">
-          <el-input v-model="selectedUser.phone" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱" label-width="120px" prop="email">
-          <el-input v-model="selectedUser.email" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" label-width="120px" prop="password">
-          <el-button type="warning" @click="resetPassword(selectedUser.username)">重置密码</el-button>
-        </el-form-item>
-        <el-form-item label="角色分配" label-width="120px" prop="roles">
-          <el-checkbox-group v-model="selectedRolesIds">
-            <el-checkbox v-for="(role,i) in roles" :key="i" :label="role.id">{{role.nameZh}}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onSubmit(selectedUser)">确 定</el-button>
-      </div>
-    </el-dialog>
+    <EditUser ref="editUserInfo" @onsubmit="updateInfo"></EditUser>
     <el-row style="margin: 18px 0px 0px 18px ">
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item :to="{ path: '/admin/dashboard' }">管理中心</el-breadcrumb-item>
@@ -42,9 +13,10 @@
       <el-table
         :data="users"
         stripe
+        ref="multipleTable"
         :default-sort="{prop: 'id', order: 'ascending'}"
         style="width: 100%"
-        :max-height="tableHeight">
+        :max-height="tght">
         <el-table-column
           type="selection"
           width="55">
@@ -108,7 +80,7 @@
         </el-table-column>
       </el-table>
       <div style="margin: 20px 0 20px 0;float: left">
-        <el-button>取消选择</el-button>
+        <el-button @click="toggleSelection()">取消选择</el-button>
         <el-button>批量删除</el-button>
       </div>
     </el-card>
@@ -116,19 +88,52 @@
 </template>
 
 <script>
-  import BulkRegistration from "@/components/admin/user/BulkRegistration";
+  import BulkRegistration from '@/components/admin/user/BulkRegistration'
+  import EditUser from './EditUser'
+
   export default {
-    name: "UserProfile",
-    components: {BulkRegistration},
-    data() {
+    name: 'UserProfile',
+    components: {EditUser, BulkRegistration},
+    data () {
       return {
         users: [],
-        roles: [],
-        dialogFormVisible: false,
-        selectedUser: [],
-        selectedRolesIds: []
       }
     },
+    mounted: function () {
+      //dom完成后加载用户信息
+      this.loadUserInfo()
+    },
+    methods: {
+      loadUserInfo () {
+        this.$axios.get('/users').then(resp => {
+          if (resp.data.code === 200) {
+            this.users = resp.data.data
+            this.$message.success(resp.data.msg)
+          } else {
+            this.$message.error(resp.data.msg)
+          }
+        })
+      },
+      //取消选择
+      toggleSelection () {
+        this.$refs.multipleTable.clearSelection()
+      },
+      //编辑用户
+      editUser (row) {
+        this.$refs.editUserInfo.dialogFormVisible = true
+        this.$refs.editUserInfo.selectedUser.id = row.id
+        this.$refs.editUserInfo.selectedUser.username = row.username
+        this.$refs.editUserInfo.selectedUser.name = row.name
+        this.$refs.editUserInfo.selectedUser.phone = row.phone
+        this.$refs.editUserInfo.selectedUser.email = row.email
+        this.$refs.editUserInfo.loadAllRole()
+        this.$refs.editUserInfo.loadRole()
+      },
+      //更新表格
+      updateInfo () {
+        this.loadUserInfo()
+      },
+    }
   }
 </script>
 

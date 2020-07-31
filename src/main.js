@@ -29,15 +29,7 @@ router.beforeEach((to, from, next) => {
         //验证该sessionid是否有权限访问该路由
         axios.get('/authentication')
           .then(resp => {
-            if (resp.data.code === 302) {
-              alert('您还未登录，请先登录')
-              next({
-                path: 'login',
-                query: {redirect: to.fullPath}
-              })
-            } else {
-              next()
-            }
+            next()
           })
       } else {
         next({

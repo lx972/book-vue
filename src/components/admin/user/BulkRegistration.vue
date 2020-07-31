@@ -2,7 +2,7 @@
   <div style="text-align: left">
     <el-button class="add-button" type="success" @click="dialogFormVisible = true">批量添加用户</el-button>
     <el-dialog
-      title="添加用户"
+      title="添用户"
       :visible.sync="dialogFormVisible"
       @close="clear"
       width="25%">
@@ -29,7 +29,8 @@
                     auto-complete="off" placeholder="E-Mail"></el-input>
         </el-form-item>
         <el-form-item style="width: 100%">
-          <el-button type="primary" style="width: 40%;background: #505458;border: none" v-on:click="register">添加</el-button>
+          <el-button type="primary" style="width: 40%;background: #505458;border: none" v-on:click="register">添加
+          </el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -37,52 +38,53 @@
 </template>
 
 <script>
-    export default {
-        name: "BulkRegistration",
-      data () {
-        return {
-          dialogFormVisible: false,
-          rules: {
-            username: [{required: true, message: '用户名不能为空', trigger: 'blur'}],
-            password: [{required: true, message: '密码不能为空', trigger: 'blur'}]
-          },
-          loginForm: {
-            username: '',
-            password: '',
-            name: '',
-            phone: '',
-            email: ''
-          }
+  export default {
+    name: 'BulkRegistration',
+    data () {
+      return {
+        dialogFormVisible: false,
+        rules: {
+          username: [{required: true, message: '用户名不能为空', trigger: 'blur'}],
+          password: [{required: true, message: '密码不能为空', trigger: 'blur'}]
+        },
+        loginForm: {
+          username: '',
+          password: '',
+          name: '',
+          phone: '',
+          email: ''
+        }
+      }
+    },
+    methods: {
+      clear () {
+        this.loginForm = {
+          username: '',
+          password: '',
+          name: '',
+          phone: '',
+          email: ''
         }
       },
-      methods: {
-        clear() {
-          this.loginForm = {
-            username: '',
-            password: '',
-            name: '',
-            phone: '',
-            email: ''
+      register () {
+        this.$axios.put('/register', {
+          username: this.loginForm.username,
+          password: this.loginForm.password,
+          name: this.loginForm.name,
+          phone: this.loginForm.phone,
+          email: this.loginForm.email
+        }).then(resp => {
+          if (resp.data.code === 200) {
+            this.$message.success(resp.data.msg)
+            this.dialogFormVisible = false
+          } else {
+            this.$message.error(resp.data.msg)
           }
-        },
-        register() {
-          this.$axios.put('/register',{
-            username: this.loginForm.username,
-            password:this.loginForm.password,
-            name: this.loginForm.name,
-            phone:this.loginForm.phone,
-            email: this.loginForm.email
-          }).then(resp=>{
-            if (resp.data.code === 200) {
-              this.$message.success(resp.data.msg)
-            }else {
-              this.$message.error(resp.data.msg)
-            }
-          })
+        })
 
-        },
-      }
+      },
     }
+  }
 </script>
 
 <style scoped>
