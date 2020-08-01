@@ -52,7 +52,7 @@ const initAdminMenu = () => {
   if (store.state.adminMenu.length > 0) {
     return
   }
-  axios.get('/menus')
+  axios.get('current/menus')
     .then(resp => {
       if (resp.data.code === 200) {
         var routers = fmtRouter(resp.data.data)

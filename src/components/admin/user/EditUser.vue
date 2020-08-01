@@ -50,9 +50,9 @@
       }
     },
     methods: {
-      //加载所有角色
+      //加载所有可用角色
       loadAllRole () {
-        this.$axios.get('roles').then(resp => {
+        this.$axios.get('enabled/roles').then(resp => {
           if (resp.data.code === 200) {
             this.roles = resp.data.data
             this.$message.success(resp.data.msg)
@@ -61,7 +61,7 @@
           }
         })
       },
-      //当前用户角色
+      //当前用户可用角色
       loadRole () {
         this.$axios.get('roleId/' + this.selectedUser.id).then(resp => {
           if (resp.data.code === 200) {
