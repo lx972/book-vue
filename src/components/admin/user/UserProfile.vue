@@ -8,7 +8,7 @@
         <el-breadcrumb-item>用户信息</el-breadcrumb-item>
       </el-breadcrumb>
     </el-row>
-    <BulkRegistration></BulkRegistration>
+    <BulkRegistration @onsubmit="updateInfo"></BulkRegistration>
     <el-card style="margin: 18px 2%;width: 95%">
       <el-table
         :data="users"
@@ -57,7 +57,7 @@
               v-model="scope.row.enabled"
               active-color="#13ce66"
               inactive-color="#ff4949"
-              @change="(value) => commitStatusChange(value, scope.row)">
+              @change="commitStatusChange(scope.row)">
             </el-switch>
           </template>
         </el-table-column>
@@ -72,6 +72,7 @@
               编辑
             </el-button>
             <el-button
+              @click="deleteUser(scope.row)"
               type="text"
               size="small">
               移除
@@ -81,7 +82,7 @@
       </el-table>
       <div style="margin: 20px 0 20px 0;float: left">
         <el-button @click="toggleSelection()">取消选择</el-button>
-        <el-button>批量删除</el-button>
+        <el-button @click="deleteBatch()">批量删除</el-button>
       </div>
     </el-card>
   </div>
@@ -132,6 +133,46 @@
       //更新表格
       updateInfo () {
         this.loadUserInfo()
+      },
+      //是否启用该用户
+      commitStatusChange (row) {
+        this.$axios.patch('updation/user/enabled', {
+          id: row.id,
+          enabled: row.enabled,
+        }).then(resp => {
+          if (resp.data.code === 200) {
+            this.$message.success(resp.data.msg)
+          } else {
+            this.$message.error(resp.data.msg)
+          }
+        })
+      },
+      //删除该用户
+      deleteUser (row) {
+        this.$axios.delete('user/' + row.id).then(resp => {
+          if (resp.data.code === 200) {
+            this.$message.success(resp.data.msg)
+            this.loadUserInfo()
+          } else {
+            this.$message.error(resp.data.msg)
+          }
+        })
+      },
+      //批量删除用户
+      deleteBatch () {
+        let uids = []
+        let selection = this.$refs.multipleTable.selection
+        selection.forEach(item => {
+          uids.push(item.id)
+        })
+        this.$axios.delete('user/Batch/'+uids).then(resp => {
+          if (resp.data.code === 200) {
+            this.$message.success(resp.data.msg)
+            this.loadUserInfo()
+          } else {
+            this.$message.error(resp.data.msg)
+          }
+        })
       },
     }
   }

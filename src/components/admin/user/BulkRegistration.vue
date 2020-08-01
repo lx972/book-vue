@@ -76,6 +76,7 @@
         }).then(resp => {
           if (resp.data.code === 200) {
             this.$message.success(resp.data.msg)
+            this.$emit('onsubmit')
             this.dialogFormVisible = false
           } else {
             this.$message.error(resp.data.msg)

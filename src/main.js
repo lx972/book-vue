@@ -23,7 +23,11 @@ Vue.config.productionTip = false
 
 //访问每一个路由前调用
 router.beforeEach((to, from, next) => {
-    //先判断是否已经登录，已登录才能访问该路径
+    //先以admin开头的路径加载菜单
+    if (store.state.user.username && to.path.startsWith('/admin')) {
+      initAdminMenu()
+    }
+    //随后判断是否已经登录，已登录才能访问该路径
     if (to.meta.requireAuth) {
       if (store.state.user.username) {
         //验证该sessionid是否有权限访问该路由
@@ -39,11 +43,6 @@ router.beforeEach((to, from, next) => {
       }
     } else {
       next()
-    }
-
-    //随后以admin开头的路径加载菜单
-    if (store.state.user.username && to.path.startsWith('/admin')) {
-      initAdminMenu()
     }
   }
 )
