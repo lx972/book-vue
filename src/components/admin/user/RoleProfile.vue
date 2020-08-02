@@ -1,6 +1,6 @@
 <template>
   <div>
-    <EditRole ref="editRoleInfo"></EditRole>
+    <EditRole ref="editRoleInfo" @onsubmit="updateRole"></EditRole>
     <el-row style="margin: 18px 0px 0px 18px ">
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item :to="{ path: '/admin/dashboard' }">管理中心</el-breadcrumb-item>
@@ -118,6 +118,12 @@
         this.$refs.editRoleInfo.dialogFormVisible=true
         this.$refs.editRoleInfo.loadAllMenus()
         this.$refs.editRoleInfo.loadMenusIds()
+        this.$refs.editRoleInfo.loadAllPermission()
+        this.$refs.editRoleInfo.loadPermissionIds()
+      },
+      //刷新表格
+      updateRole(){
+        this.loadRoles()
       },
     }
   }
