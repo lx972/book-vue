@@ -8,11 +8,12 @@
         <el-breadcrumb-item>角色配置</el-breadcrumb-item>
       </el-breadcrumb>
     </el-row>
-    <role-create @onSubmit="listRoles()"></role-create>
+    <RoleCreate @onSubmit="updateRole"></RoleCreate>
     <el-card style="margin: 18px 2%;width: 95%">
       <el-table
         :data="roles"
         stripe
+        ref="multipleTable"
         style="width: 100%"
         :max-height="tableHeight">
         <el-table-column
@@ -58,15 +59,16 @@
             </el-button>
             <el-button
               type="text"
-              size="small">
+              size="small"
+              @click="deleteRole(scope.row)">
               移除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
       <div style="margin: 20px 0 20px 0;float: left">
-        <el-button>取消选择</el-button>
-        <el-button>批量删除</el-button>
+        <el-button @click="toggleSelection()">取消选择</el-button>
+        <el-button @click="deleteBatch()">批量删除</el-button>
       </div>
     </el-card>
   </div>
@@ -74,9 +76,10 @@
 
 <script>
   import EditRole from './EditRole'
+  import RoleCreate from './RoleCreate'
   export default {
     name: 'RoleProfile',
-    components: {EditRole},
+    components: {RoleCreate, EditRole},
     data(){
       return{
         roles:[],
@@ -124,6 +127,37 @@
       //刷新表格
       updateRole(){
         this.loadRoles()
+      },
+      //删除该角色
+      deleteRole (row) {
+        this.$axios.delete('roles/' + row.id).then(resp => {
+          if (resp.data.code === 200) {
+            this.$message.success(resp.data.msg)
+            this.loadRoles()
+          } else {
+            this.$message.error(resp.data.msg)
+          }
+        })
+      },
+      //批量删除角色
+      deleteBatch () {
+        let rids = []
+        let selection = this.$refs.multipleTable.selection
+        selection.forEach(item => {
+          rids.push(item.id)
+        })
+        this.$axios.delete('roles/batch/' + rids).then(resp => {
+          if (resp.data.code === 200) {
+            this.$message.success(resp.data.msg)
+            this.loadRoles()
+          } else {
+            this.$message.error(resp.data.msg)
+          }
+        })
+      },
+      //取消选择
+      toggleSelection () {
+        this.$refs.multipleTable.clearSelection();
       },
     }
   }

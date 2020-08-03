@@ -23,27 +23,33 @@ Vue.config.productionTip = false
 
 //访问每一个路由前调用
 router.beforeEach((to, from, next) => {
-    //先以admin开头的路径加载菜单
-    if (store.state.user.username && to.path.startsWith('/admin')) {
-      initAdminMenu()
-    }
-    //随后判断是否已经登录，已登录才能访问该路径
-    if (to.meta.requireAuth) {
-      if (store.state.user.username) {
-        //验证该sessionid是否有权限访问该路由
-        axios.get('/authentication')
-          .then(resp => {
-            next()
-          })
-      } else {
-        next({
-          path: 'login',
-          query: {redirect: to.fullPath}
-        })
+    if (to.matched.length === 0) {
+      //未匹配到路径
+      from.name ? next({name: from.name}) : next('/')
+    }else {
+      //先以admin开头的路径加载菜单
+      if (store.state.user.username && to.path.startsWith('/admin')) {
+        initAdminMenu()
       }
-    } else {
-      next()
+      //随后判断是否已经登录，已登录才能访问该路径
+      if (to.meta.requireAuth) {
+        if (store.state.user.username) {
+          //验证该sessionid是否有权限访问该路由
+          axios.get('/authentication')
+            .then(resp => {
+              next()
+            })
+        } else {
+          next({
+            path: 'login',
+            query: {redirect: to.fullPath}
+          })
+        }
+      } else {
+        next()
+      }
     }
+
   }
 )
 
