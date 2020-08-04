@@ -2,6 +2,7 @@
   <div>
     <el-dialog
       title="修改角色信息"
+      @opened="open"
       @close="clear()"
       :visible.sync="dialogFormVisible">
       <el-form v-model="selectedRole" style="text-align: left" ref="dataForm">
@@ -12,9 +13,7 @@
           <el-input v-model="selectedRole.name_zh" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="功能配置" label-width="120px" prop="perms">
-          <el-checkbox-group v-model="selectedPermsIds">
-            <el-checkbox v-for="(perm,i) in perms" :key="i" :label="perm.id">{{perm.desc_}}</el-checkbox>
-          </el-checkbox-group>
+          <Permission ref="permissionInfo"></Permission>
         </el-form-item>
         <el-form-item label="菜单配置" label-width="120px" prop="menus">
           <el-tree
@@ -36,8 +35,10 @@
 </template>
 
 <script>
+  import Permission from './Permission'
   export default {
     name: 'EditRole',
+    components: {Permission},
     data () {
       return {
         selectedRole: {
@@ -45,8 +46,6 @@
           name: '',
           name_zh: '',
         },
-        perms: [],
-        selectedPermsIds: [],
         menus: [],
         props: {
           label: 'name_zh',
@@ -62,10 +61,13 @@
         this.selectedRole.id = ''
         this.selectedRole.name = ''
         this.selectedRole.name_zh = ''
-        this.perms = []
-        this.selectedPermsIds = []
         this.menus = []
         this.selectedMenusIds = []
+      },
+      //功能表格
+      open () {
+        this.$refs.permissionInfo.rid = this.selectedRole.id
+        this.$refs.permissionInfo.loadPermission()
       },
       //加载所有的菜单
       loadAllMenus () {
@@ -78,17 +80,7 @@
           }
         })
       },
-      //加载所有的功能
-      loadAllPermission () {
-        this.$axios.get('permissions').then(resp => {
-          if (resp.data.code === 200) {
-            this.perms = resp.data.data
-            this.$message.success(resp.data.msg)
-          } else {
-            this.$message.error(resp.data.msg)
-          }
-        })
-      },
+
       //加载该角色拥有菜单的id
       loadMenusIds () {
         this.$axios.get('menus/' + this.selectedRole.id).then(resp => {
@@ -101,24 +93,12 @@
           }
         })
       },
-      //加载该角色拥有功能的id
-      loadPermissionIds () {
-        this.$axios.get('permissions/' + this.selectedRole.id).then(resp => {
-          if (resp.data.code === 200) {
-            this.selectedPermsIds = resp.data.data
-            this.$message.success(resp.data.msg)
-          } else {
-            this.$message.error(resp.data.msg)
-          }
-        })
-      },
       //表单提交
       onSubmit () {
         this.$axios.put('roles', {
           id: this.selectedRole.id,
           name: this.selectedRole.name,
           name_zh: this.selectedRole.name_zh,
-          pids: this.selectedPermsIds,
           mids: this.$refs.tree.getCheckedKeys(),
         }).then(resp => {
           if (resp.data.code === 200) {
