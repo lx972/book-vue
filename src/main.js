@@ -7,8 +7,12 @@ import axios from 'axios'
 import App from './App'
 import router from './router'
 import store from './store'
+import mavonEdit from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
 
 Vue.use(ElementUI)
+
+Vue.use(mavonEdit)
 
 // 设置反向代理，前端请求默认发送到 http://localhost:8082/
 axios.defaults.baseURL = 'http://localhost:8082/api'

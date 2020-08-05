@@ -5,6 +5,7 @@ import Home from '@/components/Home'
 import AppIndex from '@/components/Home/AppIndex'
 import LibraryIndex from '@/components/library/LibraryIndex'
 import AdminIndex from "@/components/admin/AdminIndex";
+import TextEdit from '../components/jotter/TextEdit'
 
 Vue.use(Router)
 
@@ -32,6 +33,14 @@ export default new Router({
           meta: {
             requireAuth: true
           }
+        },
+        {
+          path: '/jotter',
+          name: 'TextEdit',
+          component: TextEdit,
+          meta:{
+            requireAuth:true
+          }
         }
       ]
     },
@@ -47,6 +56,7 @@ export default new Router({
       meta:{
         requireAuth:true
       }
-    }
+    },
+
   ]
 })

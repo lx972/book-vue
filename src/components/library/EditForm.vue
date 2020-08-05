@@ -52,11 +52,12 @@
 </template>
 
 <script>
-  import UploadImg from "@/components/library/UploadImg";
+  import UploadImg from '@/components/common/UploadImg'
+
   export default {
-    name: "EditForm",
+    name: 'EditForm',
     components: {UploadImg},
-    data() {
+    data () {
       return {
         dialogFormVisible: false,
         title: '添加书籍',
@@ -79,7 +80,7 @@
       }
     },
     methods: {
-      clear() {
+      clear () {
         this.form = {
           id: '',
           title: '',
@@ -97,7 +98,7 @@
         this.updstyle = 'display:none'
         this.addstyle = 'display:block'
       },
-      add() {
+      add () {
         this.$axios
           .post('/books', {
             cover: this.form.cover,
@@ -115,7 +116,7 @@
           }
         })
       },
-      upd() {
+      upd () {
         this.$axios
           .patch('/books', {
             id: this.form.id,
@@ -134,8 +135,8 @@
           }
         })
       },
-      uploadSuccess(pathFile){
-        this.form.cover=pathFile
+      uploadSuccess (pathFile) {
+        this.form.cover = pathFile
       }
     }
   }

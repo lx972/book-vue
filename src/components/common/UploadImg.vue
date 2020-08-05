@@ -5,7 +5,7 @@
     :on-preview="handlePreview"
     :on-remove="handleRemove"
     :on-success="handleSuccess"
-    with-credentials="true"
+    with-credentials
     show-file-lis="true"
     list-type="picture">
     <el-button size="small" type="primary">点击上传</el-button>
